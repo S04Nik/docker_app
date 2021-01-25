@@ -1,0 +1,21 @@
+server {
+    listen 80;
+
+    server_name realworld-docker-demo.local;
+
+    location / {
+        proxy_pass http://frontend:3000;
+        # needed for WS protocol
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_http_version 1.1;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $host;
+    }
+
+    location /api {
+        proxy_pass http://api:3001;
+        rewrite ^/api/(.*) /$1 break;
+    }
+
+}
